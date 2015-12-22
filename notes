@@ -5,4 +5,23 @@ and
 
 There are several ways to create the key table.  This program will fill rows left-to-right, top row to bottom row.  This program will (in this first version) fill the table dropping the letter Q (may have a combine-I-and-J option later).
 
+Encode method
+    Create key table
+    Break message into digraphs
+    Replace Q's with X's (table created with no Q space)
+    Insert X's between two same letters
+    Add X to end if string has odd number of letters
+    Encode
+    Print
 
+Encode Rules
+    Same row: shift 1 right (wrap if needed)
+    Same column: shift 1 down (wrap if needed)
+    Otherwise: pick opposite corners of 'box' formed by rows and columns
+        higher row's letter first
+
+Decode method
+    Create key table
+    Break message into digraphs
+    Decode (opposite of encode rules, shifts left and up)
+    Print (will include any spare X's)
