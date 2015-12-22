@@ -1,0 +1,8 @@
+Instructions and description for the cipher from
+    https://en.wikipedia.org/wiki/Playfair_cipher
+and
+    http://www.simonsingh.net/The_Black_Chamber/playfair_cipher.html
+
+There are several ways to create the key table.  This program will fill rows left-to-right, top row to bottom row.  This program will (in this first version) fill the table dropping the letter Q (may have a combine-I-and-J option later).
+
+
