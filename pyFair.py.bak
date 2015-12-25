@@ -15,21 +15,17 @@
 ###############################################################################
 ###############################################################################
 
-import string # for string.ascii_uppercase
-
 DEBUGGING = True
 
 ###############################################################################
 # Global Variables
 ###############################################################################
-TEST_KEY = "DIFFERENT"
+TEST_KEY = ""
 
 LETTER_A = ord('A')
 HEIGHT = 5
 WIDTH = 5 # Table is a 5x5 grid
 TABLE = []
-SKIP_LETTER = 'Q' # Default: table created skipping Q (Q's converted to X's)
-                  # Alternative: skip J (J's converted to I's)
 
 ###############################################################################
 # Encode
@@ -48,43 +44,41 @@ SKIP_LETTER = 'Q' # Default: table created skipping Q (Q's converted to X's)
 ###############################################################################
 
 def createTable(keyIn):
-    # Add letters of key to list of letters for key table
-    tableLetters = ""
-    for char in keyIn:
-        if char.isalpha():
-            if not char in tableLetters:
-                tableLetters = tableLetters + char
-
-    # Add the remainder of the alphabet, in order, to the list
-    for letter in string.ascii_uppercase: # iterate over the alphabet
-        if letter not in tableLetters and letter != SKIP_LETTER:
-            # skip if letter already used (in key)
-            # or if letter is (Q or J depending on option)
-            tableLetters = tableLetters + letter
-
     # Create a two-dimensional list - five rows
-    letterIndex = 0 #iterate over tableLetters to fill in key table
-    for i in range(0, HEIGHT): # create five rows in table
-        newRow = [] 
+    TABLE = []
+    for i in range(0, WIDTH):
+        TABLE.append([]) # Place five lists inside this list
+        print("appending empty list")
+    value = LETTER_A # ascii values of letters as we loop
+    for i in range(0, HEIGHT):
         for j in range(0, WIDTH):
-            newRow.append(tableLetters[letterIndex])
-            letterIndex += 1
-        TABLE.append(newRow)
-    # end for i in range
+            letter = chr(value)
+            if letter == 'Q':
+                value += 1
+                letter = chr(value)
+            TABLE[i].append(letter)
+            print("CREATE TABLE APPENDED", letter, "at", "i:", i, "j:", j)
+            value += 1
 
 def printTable():
+    output = "";
     for row in TABLE:
-        print(row)
+        for col in row:
+            output += col + " "
+            print( col )
+        output += "\n"
 
 ###############################################################################
 # Testing
 ###############################################################################
 
 print("LETTER_A is ", LETTER_A)
-createTable(TEST_KEY)
+createTable("")
+print("Printing Table")
+print(TABLE)
 print("Printing Rows")
 for row in TABLE:
     print(row)
-#printTable()
+printTable()
 
 
