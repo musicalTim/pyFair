@@ -87,21 +87,21 @@ def encode(message):
         if rowOne == rowTwo: # Same row - shift right (wrap to same row)
             outRowOne = rowOne
             outColOne = colOne + 1
-            if outColOne > WIDTH:
+            if outColOne >= WIDTH:
                 outColOne -= WIDTH
             
             outRowTwo = rowTwo # also = rowOne
             outColTwo = rowTwo + 1
-            if outColTwo > WIDTH:
+            if outColTwo >= WIDTH:
                 outColTwo -= WIDTH
         elif colOne == colTwo: # Same col - shift down (wrap to same col)
             outRowOne = rowOne + 1
-            if outRowOne > HEIGHT:
+            if outRowOne >= HEIGHT:
                 outRowOne -= HEIGHT
             outColOne = colOne
 
             outRowTwo = rowTwo + 1
-            if outRowTwo > HEIGHT:
+            if outRowTwo >= HEIGHT:
                 outRowTwo -= HEIGHT
             outColTwo = colTwo
         else:
