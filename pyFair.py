@@ -23,6 +23,7 @@ DEBUGGING = True
 # Global Variables
 ###############################################################################
 TEST_KEY = "DIFFERENT"
+TEST_MSG = "The next clue is hidden *under* the green tree."
 
 LETTER_A = ord('A')
 NOT_IN_TABLE = 200 # LOOKUP_ROWS/COLS entry for letter not in key table
@@ -38,13 +39,95 @@ SKIP_LETTER = 'Q' # Default: table created skipping Q (Q's converted to X's)
 # Encode
 ###############################################################################
 
-# def encode(message):
+# 1. Insert X between two same letters, add x at end of odd-length message
+#    for each pair (digraph)
+# 2. If same row, shift right (wrap if needed)
+# 3. If same col, shift down (wrap if needed)
+# 4. Otherwise, take "opposite corners" (char one's row first)
+
+def encode(message):
+    output = ""
+    message = message.upper() # Convert to uppercase
+    # Remove punctuation and insert necessary X's (1.)
+    readyMessage = ""
+    for char in message:
+        if char.isalpha():
+            #Check for two same letters first
+            if len(readyMessage) > 0 and readyMessage[len(readyMessage) - 1] == char:
+                readyMessage = readyMessage + 'X'
+            readyMessage = readyMessage + char
+    # end for char in message
+    if len(readyMessage) % 2 > 0:
+        readyMessage = readyMessage + 'X'
+    print("ENCODE MESSAGE:", message)
+    print("ENCODE READYMESSAGE:", readyMessage)
+
+    #Perform the encoding
+    indexOne = 0
+    indexTwo = 1 # iterate over readyMessage two characters at a time
+    while indexTwo <= len(readyMessage) - 1:
+        charOne = readyMessage[indexOne]
+        charTwo = readyMessage[indexTwo]
+        rowOne = LOOKUP_ROWS[ord(charOne) - LETTER_A]
+        colOne = LOOKUP_COLS[ord(charOne) - LETTER_A]
+        rowTwo = LOOKUP_ROWS[ord(charTwo) - LETTER_A]
+        colTwo = LOOKUP_COLS[ord(charTwo) - LETTER_A]
+
+        #print("ENCODE charOne:", charOne, "row", rowOne, "col", colOne)
+        #print("ENCODE charTwo:", charTwo, "row", rowTwo, "col", colTwo)
+
+        outRowOne = 0
+        outColOne = 0
+        outRowTwo = 0
+        outColTwo = 0 # initialize vars for printing (debugging) later
+
+        outCharOne = ''
+        outCharTwo = ''
+
+        if rowOne == rowTwo: # Same row - shift right (wrap to same row)
+            outRowOne = rowOne
+            outColOne = colOne + 1
+            if outColOne > WIDTH:
+                outColOne -= WIDTH
+            
+            outRowTwo = rowTwo # also = rowOne
+            outColTwo = rowTwo + 1
+            if outColTwo > WIDTH:
+                outColTwo -= WIDTH
+        elif colOne == colTwo: # Same col - shift down (wrap to same col)
+            outRowOne = rowOne + 1
+            if outRowOne > HEIGHT:
+                outRowOne -= HEIGHT
+            outColOne = colOne
+
+            outRowTwo = rowTwo + 1
+            if outRowTwo > HEIGHT:
+                outRowTwo -= HEIGHT
+            outColTwo = colTwo
+        else:
+            outRowOne = rowOne
+            outColOne = colTwo
+
+            outRowTwo = rowTwo
+            outColTwo = colOne
+
+        outCharOne = TABLE[outRowOne][outColOne]
+        outCharTwo = TABLE[outRowTwo][outColTwo]
+        output = output + outCharOne + outCharTwo + " "
+        
+        indexOne += 2 # taking two letters at a time
+        indexTwo += 2
+    return output
 
 ###############################################################################
 # Decode
 ###############################################################################
 
-
+#    for each pair (digraph)
+# 1. If same row, shift left (wrap if needed)
+# 2. If same col, shift up (wrap if needed)
+# 3. Otherwise, take "opposite corners" (char one's row first)
+#    Leave X's in place (user must interpret X's in output from context)
 
 ###############################################################################
 # Helper Functions
@@ -80,7 +163,6 @@ def createTable(keyIn):
 
             # Add entries to LOOKUP_ROWS and LOOKUP_COLS
             lookupIndex = ord(char) - LETTER_A
-            print("CREATE TABLE lookupIndex:", lookupIndex)
             LOOKUP_ROWS[lookupIndex] = i
             LOOKUP_COLS[lookupIndex] = j
 
@@ -109,9 +191,12 @@ print("Creating key table using key")
 createTable(TEST_KEY)
 print("Printing Table")
 printTable()
-print("Printing Lookup Rows")
-printLookupRows()
-print("Printing Lookup Cols")
-printLookupCols()
+#print("Printing Lookup Rows")
+#printLookupRows()
+#print("Printing Lookup Cols")
+#printLookupCols()
+print("Encoding test message")
+encodeResult = encode(TEST_MSG)
+print("Result:", encodeResult)
 
 
