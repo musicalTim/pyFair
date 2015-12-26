@@ -24,6 +24,7 @@ DEBUGGING = True
 ###############################################################################
 TEST_KEY = "DIFFERENT"
 TEST_MSG = "The next clue is hidden *under* the green tree."
+TEST_DECODE = "Ho db FY AN-UZ-RF.;*&,OK FI VF DB MC IR IC KI LD FY DB CI FY FY "
 
 LETTER_A = ord('A')
 NOT_IN_TABLE = 200 # LOOKUP_ROWS/COLS entry for letter not in key table
@@ -79,7 +80,7 @@ def encode(message):
         outRowOne = 0
         outColOne = 0
         outRowTwo = 0
-        outColTwo = 0 # initialize vars for printing (debugging) later
+        outColTwo = 0 # initialize vars
 
         outCharOne = ''
         outCharTwo = ''
@@ -91,7 +92,7 @@ def encode(message):
                 outColOne -= WIDTH
             
             outRowTwo = rowTwo # also = rowOne
-            outColTwo = rowTwo + 1
+            outColTwo = colTwo + 1
             if outColTwo >= WIDTH:
                 outColTwo -= WIDTH
         elif colOne == colTwo: # Same col - shift down (wrap to same col)
@@ -114,6 +115,7 @@ def encode(message):
         outCharOne = TABLE[outRowOne][outColOne]
         outCharTwo = TABLE[outRowTwo][outColTwo]
         output = output + outCharOne + outCharTwo + " "
+        print("ENCODE orig:", "" + charOne + charTwo, "code:", ""+ outCharOne + outCharTwo)
         
         indexOne += 2 # taking two letters at a time
         indexTwo += 2
@@ -128,6 +130,72 @@ def encode(message):
 # 2. If same col, shift up (wrap if needed)
 # 3. Otherwise, take "opposite corners" (char one's row first)
 #    Leave X's in place (user must interpret X's in output from context)
+
+def decode(message):
+    output = ""
+    message = message.upper() # Convert to uppercase
+    # Remove punctuation
+    readyMessage = ""
+    for char in message:
+        if char.isalpha():
+            readyMessage = readyMessage + char
+
+    print("DECODE MESSAGE:", message)
+    print("DECODE READYMESSAGE:", readyMessage)
+
+    #Perform the decoding
+    indexOne = 0
+    indexTwo = 1 # iterate over readyMessage two characters at a time
+    while indexTwo <= len(readyMessage) - 1:
+        charOne = readyMessage[indexOne]
+        charTwo = readyMessage[indexTwo]
+        rowOne = LOOKUP_ROWS[ord(charOne) - LETTER_A]
+        colOne = LOOKUP_COLS[ord(charOne) - LETTER_A]
+        rowTwo = LOOKUP_ROWS[ord(charTwo) - LETTER_A]
+        colTwo = LOOKUP_COLS[ord(charTwo) - LETTER_A]
+
+        outRowOne = 0
+        outColOne = 0
+        outRowTwo = 0
+        outColTwo = 0 # initialize vars
+
+        outCharOne = ''
+        outCharTwo = ''
+
+        if rowOne == rowTwo: # Same row - shift left
+            outRowOne = rowOne
+            outColOne = colOne - 1
+            if outColOne < 0:
+                outColOne += WIDTH
+            
+            outRowTwo = rowTwo # also = rowOne
+            outColTwo = colTwo - 1
+            if outColTwo < 0:
+                outColTwo += WIDTH
+        elif colOne == colTwo: # Same col - shift up
+            outRowOne = rowOne - 1
+            if outRowOne < 0:
+                outRowOne += HEIGHT
+            outColOne = colOne
+
+            outRowTwo = rowTwo - 1
+            if outRowTwo < 0:
+                outRowTwo += HEIGHT
+            outColTwo = colTwo
+        else:
+            outRowOne = rowOne
+            outColOne = colTwo
+
+            outRowTwo = rowTwo
+            outColTwo = colOne
+
+        outCharOne = TABLE[outRowOne][outColOne]
+        outCharTwo = TABLE[outRowTwo][outColTwo]
+        output = output + outCharOne + outCharTwo  #no space
+        
+        indexOne += 2 # taking two letters at a time
+        indexTwo += 2
+    return output
 
 ###############################################################################
 # Helper Functions
@@ -198,5 +266,7 @@ printTable()
 print("Encoding test message")
 encodeResult = encode(TEST_MSG)
 print("Result:", encodeResult)
-
+print("Decoding test message")
+decodeResult = decode(TEST_DECODE)
+print("Result:", decodeResult)
 
