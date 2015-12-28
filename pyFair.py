@@ -34,7 +34,7 @@ LOOKUP_COLS = []
 
 # Options
 SKIP_LETTER = 'Q' # Default: table created skipping Q (Q's converted to X's)
-                  # Alternative: skip J (J's converted to I's)
+                  # Alternative: skip J (J's to I's) or X (to Z's)
 SKIP_REPLACE_WITH = 'X' # Letter to replace SKIP_LETTER if found in the message
 VERBOSE = False # Print verbose output (--verbose or -v command line flag)
 
@@ -65,8 +65,6 @@ def encode(message):
     # end for char in message
     if len(readyMessage) % 2 > 0:
         readyMessage = readyMessage + 'X'
-    #print("ENCODE MESSAGE:", message)
-    #print("ENCODE READYMESSAGE:", readyMessage)
 
     #Perform the encoding 
     indexOne = 0
@@ -117,7 +115,6 @@ def encode(message):
         outCharOne = TABLE[outRowOne][outColOne]
         outCharTwo = TABLE[outRowTwo][outColTwo]
         output = output + outCharOne + outCharTwo + " "
-        #print("ENCODE orig:", "" + charOne + charTwo, "code:", ""+ outCharOne + outCharTwo)
         
         indexOne += 2 # taking two letters at a time
         indexTwo += 2
@@ -265,6 +262,9 @@ def setSkipLetter(ltr):
     elif ltr == 'J':
         SKIP_LETTER = ltr
         SKIP_REPLACE_WITH = 'I'
+    elif ltr == 'X':
+        SKIP_LETTER = ltr
+        SKIP_REPLACE_WITH = 'Z'
     else:
         print("Error: invalid skip letter given")
 
@@ -278,8 +278,8 @@ parser.add_argument('--verbose','-v', action='store_true',
     help='print verbose output (including key table)')
 parser.add_argument('function', choices=['ENCODE','DECODE'],
     help='encode or decode the message')
-parser.add_argument('--skip','-s', choices=['Q','J'],
-     help='\'skip-letter\' replace Q with X (default) or J with I')
+parser.add_argument('--skip','-s', choices=['Q','J','X'],
+     help='\'skip-letter\' replace: Q=X (default), J=I, or X=Z')
 parser.add_argument('--key','-k', nargs=1,
     help='key to use in creating key table (default: blank key)')
 parser.add_argument('message', help='string to encode or decode')
@@ -308,6 +308,7 @@ else:
 if VERBOSE == True:
     printTable()
     print("Function:", arguments['function'])
+    print("Alphabet fit: replace", SKIP_LETTER, "with", SKIP_REPLACE_WITH)
     print("Message:")
     print(arguments['message'])
     print("Result:")
